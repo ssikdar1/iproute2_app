@@ -26,6 +26,10 @@ def get_neighbors():
 def get_routes():
     return jsonify(ip2.route())
 
+@app.route('/api/v0/iproute2/link', methods=['GET'])
+def get_links():
+    return jsonify(ip2.link())
+
 @app.route('/api/v0/iproute2/maddr', methods=['GET'])
 def get_maddr():
     return jsonify(ip2.maddr())

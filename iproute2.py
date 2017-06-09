@@ -53,6 +53,48 @@ def route():
         entries.append(entry)
     p1.terminate()
     return entries
+
+def link():
+    """ ip link
+    Example:
+	1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1
+	    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+	2: enp0s25: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc pfifo_fast state DOWN mode DEFAULT group default qlen 1000
+	    link/ether 3c:97:0e:7f:f9:a7 brd ff:ff:ff:ff:ff:ff
+	3: wlp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DORMANT group default qlen 1000
+	    link/ether 3c:a9:f4:00:d9:dc brd ff:ff:ff:ff:ff:ff
+    """
+    command = shlex.split("ip link show")
+    p1 = subprocess.Popen(command, stdout=subprocess.PIPE)
+    results =  p1.stdout.readlines()
+    entries = []
+    entry = None
+    for result in results:
+        line = result.strip().split()
+        print line 
+        m = re.match(r"(\d):", line[0])
+        if m:
+            entry = {
+                "to" : line[0],
+            }
+            #3: wlp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DORMANT group default qlen 1000
+            start_point = 3
+            entry["device"] = line[1].replace(":","")
+            entry["info"] = line[2]
+            for i in xrange(3, len(line), 2):
+                key = line[i]
+                value = line[i+1]
+                entry[key] = value
+        else:
+            for i in xrange(0, len(line), 2):
+                key = line[i]
+                value = line[i+1]
+                entry[key] = value
+            
+            entries.append(entry)
+            entry = None
+    p1.terminate()
+    return entries
     
 def maddr():
     """ ip maddr/ ipmaddr
@@ -210,5 +252,8 @@ if __name__ == "__main__":
     #print("ip maddr")
     #pprint.pprint( maddr() )
 
-    print("tc -s -d  qdisc ls dev wlp3s0")
-    pprint.pprint( tc("qdisc", "ls", "wlp3s0", {'statistics' : True, 'details': True}) )
+    print("ip link")
+    pprint.pprint( link() )
+
+    #print("tc -s -d  qdisc ls dev wlp3s0")
+    #pprint.pprint( tc("qdisc", "ls", "wlp3s0", {'statistics' : True, 'details': True}) )
