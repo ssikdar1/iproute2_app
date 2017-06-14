@@ -1,0 +1,29 @@
+syntax = "proto2";
+
+package iproute2;
+
+message Neighbor {
+
+    required string to = 1;
+    required string dev = 2;
+    required string lladdr = 3;
+
+    enum State {
+
+        PERMANENT = 0;
+        NOARP = 1;
+        STALE = 2;
+        REACHABLE = 3;
+        NONE = 4;
+        INCOMPLETE = 5;
+        DELAY = 6;
+        PROBE = 7;
+        FAILED = 8;
+    }
+    
+    required State state =4;
+}
+
+message Neighbors {
+    repeated Neighbor neighbors = 1;
+}
