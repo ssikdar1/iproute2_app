@@ -139,6 +139,37 @@ def maddr():
     entries.append(entry)
     return entries
 
+def add_tuntap(interface_name, mode):
+    """
+    ip tuntap add dev tun0 mode tun
+    """
+    # TODO: what to do about sudo?
+    command = shlex.split("sudo ip tuntap add dev {} mode {}".format(interface_name, mode))
+    p1 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p1.communicate()
+    return_code = p1.returncode
+    if return_code != 0:
+        print "error"
+        print stdout
+        print stderr
+        return False
+    return True
+
+def delete_tuntap(interface_name, mode):
+    """
+    ip tuntap del dev {interface_name}
+    """
+    command = shlex.split(" ip tuntap del dev {} mode {} ".format(interface_name, mode))
+    p1 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = p1.communicate()
+    return_code = p1.returncode
+    if return_code != 0:
+        print "error"
+        print stdout
+        print stderr
+        return False
+    return True
+ 
 def tc(tc_object, tc_command, tc_dev = None, tc_options = {}):
     """ 
     Args:
@@ -252,8 +283,14 @@ if __name__ == "__main__":
     #print("ip maddr")
     #pprint.pprint( maddr() )
 
-    print("ip link")
-    pprint.pprint( link() )
+    #print("ip link")
+    #pprint.pprint( link() )
 
+
+    #print("ip tuntap")
+    #pprint.pprint( tuntap("tun1", "tun") )
+
+    print("ip tuntap")
+    pprint.pprint( delete_tuntap("tun1", "tun") )
     #print("tc -s -d  qdisc ls dev wlp3s0")
     #pprint.pprint( tc("qdisc", "ls", "wlp3s0", {'statistics' : True, 'details': True}) )

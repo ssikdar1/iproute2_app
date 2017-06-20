@@ -41,6 +41,12 @@ def get_tc():
     status, retval = ip2.tc("qdisc", "ls", "wlp3s0", {'statistics' : True, 'details': True})  
     return jsonify(retval)
 
+@app.route('/api/v0/iproute2/tuntap', methods=['DELETE'])
+def delete_tuntap():
+    interface_name = request.args.get('interface_name')
+    mode = request.args.get('mode')
+    retval = ip2.delete_tuntap(interface_name, mode)
+    return jsonify({"success": retval})
 
 if __name__ == '__main__':
     app.run(debug=True)
