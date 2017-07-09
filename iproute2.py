@@ -71,7 +71,6 @@ def link():
     entry = None
     for result in results:
         line = result.strip().split()
-        print line 
         m = re.match(r"(\d):", line[0])
         if m:
             entry = {
@@ -86,10 +85,14 @@ def link():
                 value = line[i+1]
                 entry[key] = value
         else:
-            for i in xrange(0, len(line), 2):
-                key = line[i]
-                value = line[i+1]
-                entry[key] = value
+            # link/ether 3c:97:0e:7f:f9:a7 brd ff:ff:ff:ff:ff:ff
+            if len(line) == 1:
+                entry[line[0]] = None
+            else:
+                for i in xrange(0, len(line), 2):
+                    key = line[i]
+                    value = line[i+1]
+                    entry[key] = value
             
             entries.append(entry)
             entry = None
@@ -290,7 +293,7 @@ if __name__ == "__main__":
     #print("ip tuntap")
     #pprint.pprint( tuntap("tun1", "tun") )
 
-    print("ip tuntap")
-    pprint.pprint( delete_tuntap("tun1", "tun") )
+    #print("ip tuntap")
+    #pprint.pprint( delete_tuntap("tun1", "tun") )
     #print("tc -s -d  qdisc ls dev wlp3s0")
     #pprint.pprint( tc("qdisc", "ls", "wlp3s0", {'statistics' : True, 'details': True}) )
